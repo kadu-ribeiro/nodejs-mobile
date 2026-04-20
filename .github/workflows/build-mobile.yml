@@ -2,9 +2,10 @@ name: Build
 
 on:
   push:
-    branches: [main]
+    branches: [main, update22-9-0]
   pull_request:
     branches: [main]
+  workflow_dispatch:
 
 env:
   SCCACHE_GHA_ENABLED: 'true'
