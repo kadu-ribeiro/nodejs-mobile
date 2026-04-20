@@ -94,45 +94,10 @@ constexpr unsigned CpuFeaturesFromTargetOS() {
 // CpuFeatures implementation.
 bool CpuFeatures::SupportsWasmSimd128() { return true; }
 
-void CpuFeatures::ProbeImpl(bool cross_compile) {
-  // Only use statically determined features for cross compile (snapshot).
-  if (cross_compile) {
-    supported_ |= CpuFeaturesFromCompiler();
-    supported_ |= CpuFeaturesFromTargetOS();
-    return;
-  }
-
-  // We used to probe for coherent cache support, but on older CPUs it
-  // causes crashes (crbug.com/524337), and newer CPUs don't even have
-  // the feature any more.
-
-#ifdef USE_SIMULATOR
-  supported_ |= SimulatorFeaturesFromCommandLine();
-#else
-  // Probe for additional features at runtime.
-  base::CPU cpu;
-  unsigned runtime = 0;
-  if (cpu.has_jscvt()) {
-    runtime |= 1u << JSCVT;
-  }
-  if (cpu.has_dot_prod()) {
-    runtime |= 1u << DOTPROD;
-  }
-  if (cpu.has_lse()) {
-    runtime |= 1u << LSE;
-  }
-
-  // Use the best of the features found by CPU detection and those inferred from
-  // the build system.
-  supported_ |= CpuFeaturesFromCompiler();
-  supported_ |= runtime;
-#endif  // USE_SIMULATOR
-
-  // Set a static value on whether Simd is supported.
-  // This variable is only used for certain archs to query SupportWasmSimd128()
-  // at runtime in builtins using an extern ref. Other callers should use
-  // CpuFeatures::SupportWasmSimd128().
-  CpuFeatures::supports_wasm_simd_128_ = CpuFeatures::SupportsWasmSimd128();
+void CpuFeatures::ProbeImpl(bool /*cross_compile*/) {
+  // A9/ARMv8.0 baseline — disable all ARMv8.1+ features.
+  supported_ = 0;
+  CpuFeatures::supports_wasm_simd_128_ = false;
 }
 
 void CpuFeatures::PrintTarget() {}
