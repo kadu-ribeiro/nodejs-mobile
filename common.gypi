@@ -834,5 +834,18 @@
         'include_dirs':  ['<(zoslib_include_dir)'],
       }],
     ],
+    # palera patch: force host toolset to use macOS sysroot/flags when target=iOS
+    'target_conditions': [
+      ['OS=="ios" and _toolset=="host"', {
+        'xcode_settings': {
+          'SDKROOT': 'macosx',
+          'IPHONEOS_DEPLOYMENT_TARGET': '',
+          'MACOSX_DEPLOYMENT_TARGET': '11.0',
+          'OTHER_CFLAGS!': ['-fembed-bitcode'],
+          'OTHER_CPLUSPLUSFLAGS!': ['-fembed-bitcode'],
+          'OTHER_LDFLAGS!': ['-Wl,-no_pie'],
+        },
+      }],
+    ],
   }
 }

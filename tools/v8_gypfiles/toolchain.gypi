@@ -700,7 +700,7 @@
         'target_conditions': [
           ['_toolset=="host" and host_os=="mac"', {
             'xcode_settings': {
-              'SDKROOT': '',
+              'SDKROOT': 'macosx',
               'IPHONEOS_DEPLOYMENT_TARGET': '',
               'MACOSX_DEPLOYMENT_TARGET': '11.0',
             },
